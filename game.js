@@ -17,7 +17,6 @@ const player = {
 
 const particles = [];
 
-let shiftPressed = false;
 let pressedKeyWithShift = null;
 let dashCooldown = 0;
 
@@ -157,13 +156,9 @@ function triggerDash(keyName) {
 }
 
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Shift" && dashCooldown <= 0) {
-        shiftPressed = true;
-    }
-    if (shiftPressed && pressedKeyWithShift === e.key && e.shiftKey) {
+    if (pressedKeyWithShift === e.key && e.shiftKey) {
         triggerDash(e.key);
         pressedKeyWithShift = null;
-        shiftPressed = false;
         dashCooldown = dashCooldownTime;
     }
 
@@ -180,11 +175,10 @@ document.addEventListener("keydown", (e) => {
 
 document.addEventListener("keyup", (e) => {
     if (e.key === "Shift") {
-        shiftPressed = false;
         pressedKeyWithShift = null;
     }
     if (
-        shiftPressed &&
+        dashCooldown <= 0 &&
         e.shiftKey &&
         (e.key === "ArrowRight" ||
             e.key === "ArrowLeft" ||
