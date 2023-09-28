@@ -4,6 +4,7 @@ const ctx = canvas.getContext("2d");
 const playerSize = 20;
 const particleSize = 10;
 const particleSpeed = 3;
+const playerSpeed = 5;
 const dashLength = 200;
 const dashCooldownTime = 1000;
 
@@ -17,6 +18,12 @@ const player = {
 
 const particles = [];
 
+const keydownStates = {
+    ArrowRight: false,
+    ArrowLeft: false,
+    ArrowUp: false,
+    ArrowDown: false,
+};
 let pressedKeyWithShift = null;
 let dashCooldown = 0;
 
@@ -162,14 +169,16 @@ document.addEventListener("keydown", (e) => {
         dashCooldown = dashCooldownTime;
     }
 
+    keydownStates[e.key] = true;
+
     if (e.key === "ArrowRight") {
-        player.dx = 5;
+        player.dx = playerSpeed;
     } else if (e.key === "ArrowLeft") {
-        player.dx = -5;
+        player.dx = -playerSpeed;
     } else if (e.key === "ArrowUp") {
-        player.dy = -5;
+        player.dy = -playerSpeed;
     } else if (e.key === "ArrowDown") {
-        player.dy = 5;
+        player.dy = playerSpeed;
     }
 });
 
@@ -188,10 +197,35 @@ document.addEventListener("keyup", (e) => {
         pressedKeyWithShift = e.key;
     }
 
-    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        player.dx = 0;
-    } else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-        player.dy = 0;
+    keydownStates[e.key] = false;
+
+    if (e.key === "ArrowRight") {
+        if (keydownStates.ArrowLeft) {
+            player.dx = -playerSpeed;
+        } else {
+            player.dx = 0;
+        }
+    }
+    if (e.key === "ArrowLeft") {
+        if (keydownStates.ArrowRight) {
+            player.dx = playerSpeed;
+        } else {
+            player.dx = 0;
+        }
+    }
+    if (e.key === "ArrowUp") {
+        if (keydownStates.ArrowDown) {
+            player.dy = playerSpeed;
+        } else {
+            player.dy = 0;
+        }
+    }
+    if (e.key === "ArrowDown") {
+        if (keydownStates.ArrowUp) {
+            player.dy = -playerSpeed;
+        } else {
+            player.dy = 0;
+        }
     }
 });
 
