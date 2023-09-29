@@ -2,7 +2,7 @@ const DEFAULT_SPEED = 5;
 const DEFAULT_SIZE = 20;
 const DEFAULT_COLOR = "blue";
 const DEFAULT_DASH_LENGTH = 200;
-const DEFAULT_DASH_COOLDOWN_TIME = 1000;
+const DEFAULT_DASH_COOLDOWN_TIME = 5000;
 
 export default class Player {
     constructor(canvas, size, color) {
