@@ -67,7 +67,7 @@ export default class Player {
         ctx.fillRect(this.x, this.y, this.size, this.size);
     }
 
-    keydownPlayer(e) {
+    handleKeydown(e) {
         if (this.pressedKeyWithShift === e.key && e.shiftKey) {
             this.triggerDash(e.key);
             this.pressedKeyWithShift = null;
@@ -87,7 +87,7 @@ export default class Player {
         }
     }
 
-    keyupPlayer(e) {
+    handleKeyup(e) {
         if (e.key === "Shift") {
             this.pressedKeyWithShift = null;
         }

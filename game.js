@@ -49,8 +49,12 @@ function update() {
     }
 }
 
-function draw() {
+function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function draw() {
+    clearCanvas();
 
     // Draw player
     player.draw(ctx);
@@ -72,11 +76,11 @@ function draw() {
 }
 
 document.addEventListener("keydown", (e) => {
-    player.keydownPlayer(e);
+    player.handleKeydown(e);
 });
 
 document.addEventListener("keyup", (e) => {
-    player.keyupPlayer(e);
+    player.handleKeyup(e);
 });
 
 export default update();
