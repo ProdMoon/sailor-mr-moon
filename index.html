@@ -17,9 +17,94 @@
                 border: 1px solid black;
                 background-color: #f4f4f4;
             }
+            #mobile-arrow-buttons {
+                position: fixed;
+                top: 72%;
+                left: 87%;
+                width: 1px;
+                height: 1px;
+            }
+            #mobile-arrow-buttons div {
+                width: 5vh;
+                height: 5vh;
+                border: 1px solid black;
+                border-radius: 50%;
+                background-color: #f4f4f4;
+            }
+
+            #ArrowUp {
+                position: absolute;
+                transform: translate(0, -160%);
+                border-bottom: 1px solid black;
+            }
+            #ArrowDown {
+                position: absolute;
+                transform: translate(0, 160%);
+                border-top: 1px solid black;
+            }
+            #ArrowLeft {
+                position: absolute;
+                transform: translate(-160%, 0);
+                border-right: 1px solid black;
+            }
+            #ArrowRight {
+                position: absolute;
+                transform: translate(160%, 0);
+                border-left: 1px solid black;
+            }
+
+            #ArrowUp:active {
+                background-color: #d4d4d4;
+            }
+            #ArrowDown:active {
+                background-color: #d4d4d4;
+            }
+            #ArrowLeft:active {
+                background-color: #d4d4d4;
+            }
+            #ArrowRight:active {
+                background-color: #d4d4d4;
+            }
+
+            #Shift {
+                position: fixed;
+                top: 80%;
+                left: 10%;
+                width: 5vh;
+                height: 5vh;
+                border: 1px solid black;
+                border-radius: 50%;
+                background-color: #f4f4f4;
+            }
+            #Shift:active {
+                background-color: #d4d4d4;
+            }
+
+            #z {
+                position: fixed;
+                top: 65%;
+                left: 7%;
+                width: 5vh;
+                height: 5vh;
+                border: 1px solid black;
+                border-radius: 50%;
+                background-color: #f4f4f4;
+            }
+            #z:active {
+                background-color: #d4d4d4;
+            }
         </style>
     </head>
     <body>
+        <!-- mobile buttons -->
+        <div id="z"></div>
+        <div id="Shift"></div>
+        <div id="mobile-arrow-buttons">
+            <div id="ArrowUp"></div>
+            <div id="ArrowDown"></div>
+            <div id="ArrowLeft"></div>
+            <div id="ArrowRight"></div>
+        </div>
         <script type="module" src="game.js"></script>
     </body>
 </html>

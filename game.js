@@ -2,6 +2,7 @@ import Player from "./src/components/player.js";
 import Bullet from "./src/components/bullet.js";
 import Item from "./src/components/item.js";
 import { copyObject } from "./src/utils/util.js";
+import ActivateMobileButtons from "./src/utils/activateMobileButtons.js";
 
 const gameCanvas = document.createElement("canvas");
 const gameCtx = gameCanvas.getContext("2d");
@@ -236,6 +237,9 @@ function initGame() {
 
     // Append gameCanvas to body
     document.body.appendChild(gameCanvas);
+
+    // Activate mobile buttons
+    ActivateMobileButtons();
 
     update();
 }
