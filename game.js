@@ -39,7 +39,7 @@ const levels = [
     }
 ];
 
-let isGameOver = false;
+const isGameOver = { value: false };
 let elapsedTime = 0;
 
 function update() {
@@ -82,7 +82,7 @@ function update() {
 
         // Collision detection
         if (slot.bullets[i].isCollidingWithPlayer(player)) {
-            isGameOver = true;
+            isGameOver.value = true;
         }
     }
 
@@ -108,7 +108,7 @@ function update() {
     draw();
 
     // Loop
-    if (!isGameOver) {
+    if (!isGameOver.value) {
         requestAnimationFrame(update);
     }
 }
@@ -164,7 +164,7 @@ function draw() {
         }, 1000);
     }
 
-    if (isGameOver) {
+    if (isGameOver.value) {
         ctx.fillStyle = "black";
         ctx.font = "30px Arial";
         ctx.fillText("Game Over", canvas.width / 2 - 80, canvas.height / 2);
@@ -180,9 +180,9 @@ function draw() {
 }
 
 document.addEventListener("keydown", (e) => {
-    if (!isGameOver) {
+    if (!isGameOver.value) {
         player.handleKeydown(e);
-        
+
         if (e.key === "z" && slot.catchedItems.length > 0) {
             slot.itemWillBeUsed = copyObject(slot.catchedItems[0]);
             slot.catchedItems.splice(0, 1);
@@ -195,7 +195,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
-    if (!isGameOver) {
+    if (!isGameOver.value) {
         player.handleKeyup(e);
     }
 });
@@ -239,7 +239,7 @@ function initGame() {
     document.body.appendChild(gameCanvas);
 
     // Activate mobile buttons
-    ActivateMobileButtons();
+    ActivateMobileButtons(player, isGameOver, slot);
 
     update();
 }

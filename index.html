@@ -93,17 +93,28 @@
             #z:active {
                 background-color: #d4d4d4;
             }
+
+            #toggle-fullscreen {
+                position: fixed;
+                top: 2%;
+                right: 2%;
+                border: 1px solid black;
+                background-color: #f4f4f4;
+            }
         </style>
     </head>
     <body>
         <!-- mobile buttons -->
-        <div id="z"></div>
-        <div id="Shift"></div>
-        <div id="mobile-arrow-buttons">
-            <div id="ArrowUp"></div>
-            <div id="ArrowDown"></div>
-            <div id="ArrowLeft"></div>
-            <div id="ArrowRight"></div>
+        <div id="mobile-buttons">
+            <button id="toggle-fullscreen">FullScreen</button>
+            <div id="z"></div>
+            <div id="Shift"></div>
+            <div id="mobile-arrow-buttons">
+                <div id="ArrowUp"></div>
+                <div id="ArrowDown"></div>
+                <div id="ArrowLeft"></div>
+                <div id="ArrowRight"></div>
+            </div>
         </div>
         <script type="module" src="game.js"></script>
     </body>
