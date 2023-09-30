@@ -15,15 +15,40 @@ const slot = {
     itemWillBeUsed: null,
 };
 
+let currentLevel = 0;
+let levelChanged = false;
+const levels = [
+    {
+        elapsedTime: 60 * 1000,
+        weight: 1,
+    },
+    {
+        elapsedTime: 120 * 1000,
+        weight: 0.85,
+    },
+    {
+        elapsedTime: 180 * 1000,
+        weight: 0.7,
+    }
+];
+
 let isGameOver = false;
 let elapsedTime = 0;
 
 function update() {
+    // Update level
+    if (currentLevel < levels.length - 1 && elapsedTime >= levels[currentLevel].elapsedTime) {
+        levelChanged = true;
+        slot.bullets = [];
+        currentLevel++;
+    }
+
     // Update player
     player.update();
 
     // Create bullets
-    if (Math.random() < 0.2) {
+    const bulletCreationProbability = 1 - Math.pow(0.999, (elapsedTime % 60000) / (120 * levels[currentLevel].weight));
+    if (Math.random() < bulletCreationProbability) {
         const bullet = new Bullet(canvas);
         slot.bullets.push(bullet);
     }
@@ -115,6 +140,21 @@ function draw() {
     ctx.fillStyle = "black";
     ctx.font = "14px Arial";
     ctx.fillText("Items: " + slot.catchedItems.length, 10, 90);
+
+    // Draw level
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    ctx.fillText("Level: " + (currentLevel + 1), 10, 120);
+
+    // Draw level changed
+    if (levelChanged) {
+        ctx.fillStyle = "black";
+        ctx.font = "30px Arial";
+        ctx.fillText("Level " + (currentLevel + 1), canvas.width / 2 - 50, canvas.height / 2);
+        setTimeout(() => {
+            levelChanged = false;
+        }, 1000);
+    }
 
     if (isGameOver) {
         ctx.fillStyle = "black";
