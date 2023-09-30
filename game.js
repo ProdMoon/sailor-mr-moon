@@ -3,7 +3,13 @@ import Bullet from "./src/components/bullet.js";
 import Item from "./src/components/item.js";
 import { copyObject } from "./src/utils/util.js";
 
-const canvas = document.getElementById("gameCanvas");
+const gameCanvas = document.createElement("canvas");
+const gameCtx = gameCanvas.getContext("2d");
+let zoomLevel = 1;
+
+const canvas = document.createElement("canvas");
+canvas.width = 800;
+canvas.height = 600;
 const ctx = canvas.getContext("2d");
 
 const player = new Player(canvas);
@@ -108,6 +114,7 @@ function update() {
 
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 }
 
 function draw() {
@@ -163,6 +170,12 @@ function draw() {
         ctx.font = "20px Arial";
         ctx.fillText("Press Enter to restart", canvas.width / 2 - 95, canvas.height / 2 + 30);
     }
+
+    // Draw virtual canvas to real canvas
+    gameCtx.save();
+    gameCtx.scale(zoomLevel, zoomLevel);
+    gameCtx.drawImage(canvas, 0, 0);
+    gameCtx.restore();
 }
 
 document.addEventListener("keydown", (e) => {
@@ -186,4 +199,45 @@ document.addEventListener("keyup", (e) => {
     }
 });
 
-export default update();
+
+/* Resizing */
+let resizeTimeout;
+
+function resizeCanvas() {
+    // Get vw and vh
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+
+    // Set gameCanvas size
+    if (vw / vh > 4 / 3) {
+        gameCanvas.width = vh * 4 / 3;
+        gameCanvas.height = vh;
+    } else {
+        gameCanvas.width = vw;
+        gameCanvas.height = vw * 3 / 4;
+    }
+    zoomLevel = gameCanvas.width / 800;
+
+    // Draw everything
+    draw();
+}
+
+function debouncedResize() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(resizeCanvas, 100);
+}
+
+window.addEventListener("resize", debouncedResize);
+/* End of resizing */
+
+function initGame() {
+    // Set canvas size
+    resizeCanvas();
+
+    // Append gameCanvas to body
+    document.body.appendChild(gameCanvas);
+
+    update();
+}
+
+export default initGame();
