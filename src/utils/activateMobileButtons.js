@@ -6,6 +6,7 @@ export default function ActivateMobileButtons() {
         button.addEventListener("touchstart", (e) => {
             e.preventDefault();
             e.stopPropagation();
+            alert("keydown")
             window.dispatchEvent(new KeyboardEvent("keydown", { key: buttonName }));
         });
         button.addEventListener("touchend", (e) => {
