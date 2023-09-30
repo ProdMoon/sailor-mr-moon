@@ -1,7 +1,7 @@
 import Player from "./src/components/player.js";
 import Bullet from "./src/components/bullet.js";
 import Item from "./src/components/item.js";
-import copyObject from "./src/utils/copyObject.js";
+import { copyObject } from "./src/utils/util.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
