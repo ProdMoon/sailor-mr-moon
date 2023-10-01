@@ -1,0 +1,125 @@
+@font-face {
+    font-family: "PixeloidMono";
+    src: url("/src/fonts/PixeloidMono.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "PixeloidSans";
+    src: url("/src/fonts/PixeloidSans.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "PixeloidSansBold";
+    src: url("/src/fonts/PixeloidSansBold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+canvas {
+    border: 1px solid black;
+    background-color: #f4f4f4;
+}
+#mobile-arrow-buttons {
+    position: fixed;
+    top: 60%;
+    right: 18%;
+    width: 1px;
+    height: 1px;
+}
+#mobile-arrow-buttons div {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid black;
+    border-radius: 50%;
+    background-color: #f4f4f4;
+}
+
+#ArrowUp {
+    position: absolute;
+    transform: translate(0, -140%);
+    border-bottom: 1px solid black;
+}
+#ArrowDown {
+    position: absolute;
+    transform: translate(0, 140%);
+    border-top: 1px solid black;
+}
+#ArrowLeft {
+    position: absolute;
+    transform: translate(-140%, 0);
+    border-right: 1px solid black;
+}
+#ArrowRight {
+    position: absolute;
+    transform: translate(140%, 0);
+    border-left: 1px solid black;
+}
+
+#ArrowUp:active {
+    background-color: #d4d4d4;
+}
+#ArrowDown:active {
+    background-color: #d4d4d4;
+}
+#ArrowLeft:active {
+    background-color: #d4d4d4;
+}
+#ArrowRight:active {
+    background-color: #d4d4d4;
+}
+
+#z {
+    position: fixed;
+    top: 50%;
+    left: 7%;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid black;
+    border-radius: 50%;
+    background-color: #f4f4f4;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#z:active {
+    background-color: #d4d4d4;
+}
+
+#Shift {
+    position: fixed;
+    top: 75%;
+    left: 10%;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid black;
+    border-radius: 50%;
+    background-color: #f4f4f4;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#Shift:active {
+    background-color: #d4d4d4;
+}
+
+#toggle-fullscreen {
+    position: fixed;
+    top: 2%;
+    right: 2%;
+    border: 1px solid black;
+    background-color: #f4f4f4;
+}

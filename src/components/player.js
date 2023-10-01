@@ -34,6 +34,8 @@ export default class Player {
             ArrowUp: false,
             ArrowDown: false,
         };
+        this.img = new Image();
+        this.img.src = "/src/assets/images/player.png";
     }
 
     update() {
@@ -63,8 +65,7 @@ export default class Player {
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.size, this.size);
+        ctx.drawImage(this.img, this.x, this.y, this.size, this.size);
     }
 
     handleKeydown(e) {

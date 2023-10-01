@@ -1,6 +1,7 @@
 import Player from "./src/components/player.js";
 import Bullet from "./src/components/bullet.js";
 import Item from "./src/components/item.js";
+import Background from "./src/components/background.js";
 import { copyObject } from "./src/utils/util.js";
 import ActivateMobileButtons from "./src/utils/activateMobileButtons.js";
 
@@ -13,6 +14,7 @@ canvas.width = 800;
 canvas.height = 600;
 const ctx = canvas.getContext("2d");
 
+const background = new Background(canvas);
 const player = new Player(canvas);
 
 const slot = {
@@ -41,6 +43,7 @@ const levels = [
 
 const isGameOver = { value: false };
 let elapsedTime = 0;
+let elapsedFrames = 0;
 
 function update() {
     // Update level
@@ -49,6 +52,9 @@ function update() {
         slot.bullets = [];
         currentLevel++;
     }
+
+    // Update background
+    background.update(elapsedFrames);
 
     // Update player
     player.update();
@@ -104,6 +110,9 @@ function update() {
     // Increase elapsed time in milliseconds
     elapsedTime += 1000 / 60;
 
+    // Increase elapsed frames
+    elapsedFrames++;
+
     // Draw everything
     draw();
 
@@ -121,6 +130,9 @@ function clearCanvas() {
 function draw() {
     clearCanvas();
 
+    // Draw background
+    background.draw(ctx);
+
     // Draw player
     player.draw(ctx);
 
@@ -135,41 +147,41 @@ function draw() {
     }
 
     // Draw time
-    ctx.fillStyle = "black";
-    ctx.font = "20px Arial";
+    ctx.fillStyle = "#bbb";
+    ctx.font = "18px PixeloidSans";
     ctx.fillText("Time: " + (elapsedTime / 1000).toFixed(2), 10, 30);
 
     // Draw dash cooldown
-    ctx.fillStyle = "black";
-    ctx.font = "20px Arial";
-    ctx.fillText("Dash cooldown: " + (player.dashCooldown / 1000).toFixed(2), 10, 60);
+    ctx.fillStyle = "#bbb";
+    ctx.font = "18px PixeloidSans";
+    ctx.fillText("Dash: " + (player.dashCooldown / 1000).toFixed(2), 10, 60);
 
     // Draw Items
-    ctx.fillStyle = "black";
-    ctx.font = "14px Arial";
+    ctx.fillStyle = "#bbb";
+    ctx.font = "18px PixeloidSans";
     ctx.fillText("Items: " + slot.catchedItems.length, 10, 90);
 
     // Draw level
-    ctx.fillStyle = "black";
-    ctx.font = "20px Arial";
+    ctx.fillStyle = "#bbb";
+    ctx.font = "18px PixeloidSans";
     ctx.fillText("Level: " + (currentLevel + 1), 10, 120);
 
     // Draw level changed
     if (levelChanged) {
-        ctx.fillStyle = "black";
-        ctx.font = "30px Arial";
-        ctx.fillText("Level " + (currentLevel + 1), canvas.width / 2 - 50, canvas.height / 2);
+        ctx.fillStyle = "#bbb";
+        ctx.font = "30px PixeloidSansBold";
+        ctx.fillText("Level " + (currentLevel + 1), canvas.width / 2 - 70, canvas.height / 2);
         setTimeout(() => {
             levelChanged = false;
         }, 1000);
     }
 
     if (isGameOver.value) {
-        ctx.fillStyle = "black";
-        ctx.font = "30px Arial";
-        ctx.fillText("Game Over", canvas.width / 2 - 80, canvas.height / 2);
-        ctx.font = "20px Arial";
-        ctx.fillText("Press Enter to restart", canvas.width / 2 - 95, canvas.height / 2 + 30);
+        ctx.fillStyle = "#bbb";
+        ctx.font = "30px PixeloidSansBold";
+        ctx.fillText("Game Over", canvas.width / 2 - 90, canvas.height / 2 - 10);
+        ctx.font = "20px PixeloidSans";
+        ctx.fillText("Press Enter to restart", canvas.width / 2 - 110, canvas.height / 2 + 20);
     }
 
     // Draw virtual canvas to real canvas
