@@ -179,9 +179,9 @@ function draw() {
     if (isGameOver.value) {
         ctx.fillStyle = "#bbb";
         ctx.font = "30px PixeloidSansBold";
-        ctx.fillText("Game Over", canvas.width / 2 - 90, canvas.height / 2 - 10);
+        ctx.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2 - 10);
         ctx.font = "20px PixeloidSans";
-        ctx.fillText("Press Enter to restart", canvas.width / 2 - 110, canvas.height / 2 + 20);
+        ctx.fillText("Press Enter to restart", canvas.width / 2 - 122, canvas.height / 2 + 20);
     }
 
     // Draw virtual canvas to real canvas
@@ -243,7 +243,7 @@ function debouncedResize() {
 window.addEventListener("resize", debouncedResize);
 /* End of resizing */
 
-function initGame() {
+async function initGame() {
     // Set canvas size
     resizeCanvas();
 
@@ -252,6 +252,14 @@ function initGame() {
 
     // Activate mobile buttons
     ActivateMobileButtons(player, isGameOver, slot);
+
+    // Load fonts
+    const font = new FontFace("PixeloidSans", "url(/src/assets/fonts/PixeloidSans.ttf)");
+    const fontBold = new FontFace("PixeloidSansBold", "url(/src/assets/fonts/PixeloidSansBold.ttf)");
+    await font.load();
+    await fontBold.load();
+    document.fonts.add(font);
+    document.fonts.add(fontBold);
 
     update();
 }
