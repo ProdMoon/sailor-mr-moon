@@ -5,6 +5,7 @@ import Background from "./src/components/background.js";
 import { copyObject } from "./src/utils/util.js";
 import ActivateMobileButtons from "./src/utils/activateMobileButtons.js";
 import BossStage from "./src/components/bossStage.js";
+import Collision from "./src/components/collision.js";
 
 const gameCanvas = document.createElement("canvas");
 const gameCtx = gameCanvas.getContext("2d");
@@ -41,6 +42,7 @@ const levels = [
     }
 ];
 
+const isCollided = { value: false };
 const isGameOver = { value: false };
 let elapsedTime = 0;
 const EACH_LEVEL_TIME = 60000;
@@ -48,105 +50,117 @@ let bossStageLeftTime = EACH_LEVEL_TIME;
 let elapsedFrames = 0;
 
 function update() {
-    // Check if boss stage should be enabled
-    if (bossStageLeftTime <= 0 && currentLevel < levels.length - 1) {
-        slot.bullets = [];
-        bossStage.enable(currentLevel);
-        bossStageLeftTime = EACH_LEVEL_TIME;
-    }
+    if (!isCollided.value) {
+        // Check if boss stage should be enabled
+        if (bossStageLeftTime <= 0 && currentLevel < levels.length - 1) {
+            slot.bullets = [];
+            bossStage.enable(currentLevel);
+            bossStageLeftTime = EACH_LEVEL_TIME;
+        }
 
-    // Update background
-    background.update(elapsedFrames);
+        // Update background
+        background.update(elapsedFrames);
 
-    // Update player
-    player.update();
+        // Update player
+        player.update();
 
-    // Update boss stage
-    if (bossStage.isEnabled) {
-        bossStage.update(slot.bullets);
-        if (!bossStage.isEnabled) {
-            if (currentLevel < levels.length - 1) {
-                currentLevel++;
-                levelChanged.value = true;
+        // Update boss stage
+        if (bossStage.isEnabled) {
+            bossStage.update(slot.bullets);
+            if (!bossStage.isEnabled) {
+                if (currentLevel < levels.length - 1) {
+                    currentLevel++;
+                    levelChanged.value = true;
+                }
             }
         }
-    }
 
-    // Create bullets
-    if (!bossStage.isEnabled) {
-        const bulletCreationProbability = 1 - Math.pow(0.999, ((EACH_LEVEL_TIME - bossStageLeftTime) % EACH_LEVEL_TIME) / (120 * levels[currentLevel].weight));
-        if (Math.random() < bulletCreationProbability) {
-            const bullet = new Bullet(canvas);
-            slot.bullets.push(bullet);
+        // Create bullets
+        if (!bossStage.isEnabled) {
+            const bulletCreationProbability = 1 - Math.pow(0.999, ((EACH_LEVEL_TIME - bossStageLeftTime) % EACH_LEVEL_TIME) / (120 * levels[currentLevel].weight));
+            if (Math.random() < bulletCreationProbability) {
+                const bullet = new Bullet(canvas);
+                slot.bullets.push(bullet);
+            }
         }
-    }
 
-    // Create items
-    if (Math.random() < 0.007) {
-        const item = new Item("shield", canvas);
-        slot.items.push(item);
-    }
-
-    // Use item
-    if (slot.itemWillBeUsed) {
-        slot.itemWillBeUsed.behavior(player, slot);
-        if (slot.itemWillBeUsed.duration > 0) {
-            slot.itemWillBeUsed.duration--;
-        } else {
-            slot.itemWillBeUsed = null;
+        // Create items
+        if (Math.random() < 0.007) {
+            const item = new Item("shield", canvas);
+            slot.items.push(item);
         }
-    }
 
-    // Update effect
-    if (slot.effect) {
+        // Use item
+        if (slot.itemWillBeUsed) {
+            slot.itemWillBeUsed.behavior(player, slot);
+            if (slot.itemWillBeUsed.duration > 0) {
+                slot.itemWillBeUsed.duration--;
+            } else {
+                slot.itemWillBeUsed = null;
+            }
+        }
+
+        // Update effect
+        if (slot.effect) {
+            slot.effect.update(player);
+            if (!slot.effect.isEnabled) {
+                slot.effect = null;
+            }
+        }
+
+        // Move & remove bullets
+        for (let i = slot.bullets.length - 1; i >= 0; i--) {
+            slot.bullets[i].update();
+            if (slot.bullets[i].isOffScreen(canvas)) {
+                slot.bullets.splice(i, 1);
+                continue;
+            }
+
+            // Collision detection
+            if (slot.bullets[i].isCollidingWithPlayer(player)) {
+                isCollided.value = true;
+                break;
+            }
+        }
+
+        // Move & remove items
+        for (let i = slot.items.length - 1; i >= 0; i--) {
+            slot.items[i].update();
+            if (slot.items[i].isOffScreen(canvas)) {
+                slot.items.splice(i, 1);
+                continue;
+            }
+
+            // Collision detection
+            if (slot.items[i].isCollidingWithPlayer(player)) {
+                slot.catchedItems.push(copyObject(slot.items[i]));
+                slot.items.splice(i, 1);
+            }
+        }
+
+        // Increase elapsed time in milliseconds
+        elapsedTime += 1000 / 60;
+
+        // Decrease boss stage left time
+        if (!bossStage.isEnabled) {
+            bossStageLeftTime -= 1000 / 60;
+            if (bossStageLeftTime < 0) {
+                bossStageLeftTime = 0;
+            }
+        }
+
+        // Increase elapsed frames
+        elapsedFrames++;
+    } else {
+        // Collided situation
+        if (!slot.effect) {
+            slot.effect = new Collision();
+        }
         slot.effect.update(player);
         if (!slot.effect.isEnabled) {
-            slot.effect = null;
-        }
-    }
-
-    // Move & remove bullets
-    for (let i = slot.bullets.length - 1; i >= 0; i--) {
-        slot.bullets[i].update();
-        if (slot.bullets[i].isOffScreen(canvas)) {
-            slot.bullets.splice(i, 1);
-            continue;
-        }
-
-        // Collision detection
-        if (slot.bullets[i].isCollidingWithPlayer(player)) {
             isGameOver.value = true;
         }
     }
-
-    // Move & remove items
-    for (let i = slot.items.length - 1; i >= 0; i--) {
-        slot.items[i].update();
-        if (slot.items[i].isOffScreen(canvas)) {
-            slot.items.splice(i, 1);
-            continue;
-        }
-
-        // Collision detection
-        if (slot.items[i].isCollidingWithPlayer(player)) {
-            slot.catchedItems.push(copyObject(slot.items[i]));
-            slot.items.splice(i, 1);
-        }
-    }
-
-    // Increase elapsed time in milliseconds
-    elapsedTime += 1000 / 60;
-
-    // Decrease boss stage left time
-    if (!bossStage.isEnabled) {
-        bossStageLeftTime -= 1000 / 60;
-        if (bossStageLeftTime < 0) {
-            bossStageLeftTime = 0;
-        }
-    }
-
-    // Increase elapsed frames
-    elapsedFrames++;
 
     // Draw everything
     draw();
