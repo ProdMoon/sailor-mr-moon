@@ -173,25 +173,25 @@ function draw() {
     ctx.font = "18px PixeloidSans";
     ctx.fillText("Time: " + (elapsedTime / 1000).toFixed(2), 10, 30);
     
-    // Draw dash cooldown
-    ctx.fillStyle = "#bbb";
-    ctx.font = "18px PixeloidSans";
-    ctx.fillText("Dash: " + (player.dashCooldown / 1000).toFixed(2), 10, 60);
-    
-    // Draw Items
-    ctx.fillStyle = "#bbb";
-    ctx.font = "18px PixeloidSans";
-    ctx.fillText("Items: " + slot.catchedItems.length, 10, 90);
-    
     // Draw level
     ctx.fillStyle = "#bbb";
     ctx.font = "18px PixeloidSans";
-    ctx.fillText("Level: " + (currentLevel + 1), 10, 120);
-
+    ctx.fillText("Level: " + (currentLevel + 1), 10, 60);
+    
     // Draw boss stage left time
     ctx.fillStyle = "#bbb";
     ctx.font = "18px PixeloidSans";
-    ctx.fillText("Boss: " + (bossStageLeftTime / 1000).toFixed(), 10, 150);
+    ctx.fillText("Boss: " + (bossStageLeftTime / 1000).toFixed(), 10, 90);
+    
+    // Draw Items
+    ctx.fillStyle = slot.catchedItems.length > 0 ? "#fff" : "#bbb";
+    ctx.font = "18px PixeloidSans";
+    ctx.fillText("Items: " + slot.catchedItems.length, 10, 120);
+
+    // Draw dash cooldown
+    ctx.fillStyle = player.dashCooldown <= 0 ? "#fff" : "#bbb";
+    ctx.font = "18px PixeloidSans";
+    ctx.fillText("Dash: " + (player.dashCooldown <= 0 ? "ON" : (player.dashCooldown / 1000).toFixed(2)), 10, 150);
 
     // Draw level changed
     if (levelChanged.value) {
