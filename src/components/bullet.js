@@ -5,11 +5,14 @@ const DEFAULT_RADIUS = 5;
 const DEFAULT_SPEED = 3;
 
 export default class Bullet extends Particle {
-    constructor(canvas, speed, radius, color) {
-        speed = speed ?? DEFAULT_SPEED;
-        radius = radius ?? DEFAULT_RADIUS;
-        color = color ?? DEFAULT_COLOR;
-        super(canvas, speed, radius, color);
+    constructor(canvas, attributes) {
+        if (!attributes) {
+            attributes = {};
+        }
+        attributes.speed = attributes.speed ?? DEFAULT_SPEED;
+        attributes.radius = attributes.radius ?? DEFAULT_RADIUS;
+        attributes.color = attributes.color ?? DEFAULT_COLOR;
+        super(canvas, attributes);
     }
 
     draw(ctx) {

@@ -18,11 +18,14 @@ function bombBehavior(player, bullets) {
 }
 
 export default class Item extends Particle {
-    constructor(type, canvas, speed, radius, color) {
-        speed = speed ?? itemProperties[type].speed;
-        radius = radius ?? itemProperties[type].radius;
-        color = color ?? itemProperties[type].color;
-        super(canvas, speed, radius, color);
+    constructor(type, canvas, attributes) {
+        if (!attributes) {
+            attributes = {};
+        }
+        attributes.speed = attributes.speed ?? itemProperties[type].speed;
+        attributes.radius = attributes.radius ?? itemProperties[type].radius;
+        attributes.color = attributes.color ?? itemProperties[type].color;
+        super(canvas, attributes);
         this.type = type;
         this.behavior = itemProperties[type].behavior;
     }

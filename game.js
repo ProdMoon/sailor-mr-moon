@@ -4,6 +4,7 @@ import Item from "./src/components/item.js";
 import Background from "./src/components/background.js";
 import { copyObject } from "./src/utils/util.js";
 import ActivateMobileButtons from "./src/utils/activateMobileButtons.js";
+import BossStage from "./src/components/bossStage.js";
 
 const gameCanvas = document.createElement("canvas");
 const gameCtx = gameCanvas.getContext("2d");
@@ -16,6 +17,7 @@ const ctx = canvas.getContext("2d");
 
 const background = new Background(canvas);
 const player = new Player(canvas);
+const bossStage = new BossStage(canvas);
 
 const slot = {
     bullets: [],
@@ -25,32 +27,31 @@ const slot = {
 };
 
 let currentLevel = 0;
-let levelChanged = false;
+const levelChanged = { value: false };
 const levels = [
     {
-        elapsedTime: 60 * 1000,
         weight: 1,
     },
     {
-        elapsedTime: 120 * 1000,
-        weight: 0.85,
+        weight: 0.8,
     },
     {
-        elapsedTime: 180 * 1000,
-        weight: 0.7,
+        weight: 0.6,
     }
 ];
 
 const isGameOver = { value: false };
 let elapsedTime = 0;
+const EACH_LEVEL_TIME = 60000;
+let bossStageLeftTime = EACH_LEVEL_TIME;
 let elapsedFrames = 0;
 
 function update() {
-    // Update level
-    if (currentLevel < levels.length - 1 && elapsedTime >= levels[currentLevel].elapsedTime) {
-        levelChanged = true;
+    // Check if boss stage should be enabled
+    if (bossStageLeftTime <= 0) {
         slot.bullets = [];
-        currentLevel++;
+        bossStage.enable(currentLevel);
+        bossStageLeftTime = EACH_LEVEL_TIME;
     }
 
     // Update background
@@ -59,11 +60,22 @@ function update() {
     // Update player
     player.update();
 
+    // Update boss stage
+    if (bossStage.isEnabled) {
+        bossStage.update(slot.bullets);
+        if (!bossStage.isEnabled) {
+            currentLevel++;
+            levelChanged.value = true;
+        }
+    }
+
     // Create bullets
-    const bulletCreationProbability = 1 - Math.pow(0.999, (elapsedTime % 60000) / (120 * levels[currentLevel].weight));
-    if (Math.random() < bulletCreationProbability) {
-        const bullet = new Bullet(canvas);
-        slot.bullets.push(bullet);
+    if (!bossStage.isEnabled) {
+        const bulletCreationProbability = 1 - Math.pow(0.999, ((EACH_LEVEL_TIME - bossStageLeftTime) % EACH_LEVEL_TIME) / (120 * levels[currentLevel].weight));
+        if (Math.random() < bulletCreationProbability) {
+            const bullet = new Bullet(canvas);
+            slot.bullets.push(bullet);
+        }
     }
 
     // Create items
@@ -110,6 +122,11 @@ function update() {
     // Increase elapsed time in milliseconds
     elapsedTime += 1000 / 60;
 
+    // Decrease boss stage left time
+    if (!bossStage.isEnabled) {
+        bossStageLeftTime -= 1000 / 60;
+    }
+
     // Increase elapsed frames
     elapsedFrames++;
 
@@ -146,33 +163,43 @@ function draw() {
         item.draw(ctx);
     }
 
+    // Draw boss
+    if (bossStage.isEnabled) {
+        bossStage.draw(ctx);
+    }
+
     // Draw time
     ctx.fillStyle = "#bbb";
     ctx.font = "18px PixeloidSans";
     ctx.fillText("Time: " + (elapsedTime / 1000).toFixed(2), 10, 30);
-
+    
     // Draw dash cooldown
     ctx.fillStyle = "#bbb";
     ctx.font = "18px PixeloidSans";
     ctx.fillText("Dash: " + (player.dashCooldown / 1000).toFixed(2), 10, 60);
-
+    
     // Draw Items
     ctx.fillStyle = "#bbb";
     ctx.font = "18px PixeloidSans";
     ctx.fillText("Items: " + slot.catchedItems.length, 10, 90);
-
+    
     // Draw level
     ctx.fillStyle = "#bbb";
     ctx.font = "18px PixeloidSans";
     ctx.fillText("Level: " + (currentLevel + 1), 10, 120);
 
+    // Draw boss stage left time
+    ctx.fillStyle = "#bbb";
+    ctx.font = "18px PixeloidSans";
+    ctx.fillText("Boss: " + (bossStageLeftTime / 1000).toFixed(), 10, 150);
+
     // Draw level changed
-    if (levelChanged) {
+    if (levelChanged.value) {
         ctx.fillStyle = "#bbb";
         ctx.font = "30px PixeloidSansBold";
         ctx.fillText("Level " + (currentLevel + 1), canvas.width / 2 - 70, canvas.height / 2);
         setTimeout(() => {
-            levelChanged = false;
+            levelChanged.value = false;
         }, 1000);
     }
 

@@ -1,26 +1,40 @@
 export default class Particle {
-    constructor(canvas, speed, radius, color) {
+    constructor(canvas, attributes) {
         if (!canvas instanceof HTMLCanvasElement) {
             throw new Error("canvas must be an instance of HTMLCanvasElement");
         }
+        if (!attributes) {
+            attributes = {};
+        }
         this.canvas = canvas;
         this.x = 0;
+        if (typeof attributes.x === "number") {
+            this.x = attributes.x;
+        }
         this.y = 0;
+        if (typeof attributes.y === "number") {
+            this.y = attributes.y;
+        }
         this.angle = 0;
+        if (typeof attributes.angle === "number") {
+            this.angle = attributes.angle;
+        }
         this.speed = 1;
-        if (typeof speed === "number") {
-            this.speed = speed;
+        if (typeof attributes.speed === "number") {
+            this.speed = attributes.speed;
         }
         this.radius = 10;
-        if (typeof radius === "number") {
-            this.radius = radius;
+        if (typeof attributes.radius === "number") {
+            this.radius = attributes.radius;
         }
         this.color = '#000';
-        if (typeof color === "string") {
-            this.color = color;
+        if (typeof attributes.color === "string") {
+            this.color = attributes.color;
         }
     
-        this.generateRandomParticle();
+        if (!this.x && !this.y && !this.angle) {
+            this.generateRandomParticle();
+        }
     }
 
     generateRandomParticle() {
