@@ -15,8 +15,8 @@ function toggleFullscreen() {
 }
 
 export default function ActivateMobileButtons(player, isGameOver, slot) {
-    if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        document.getElementById("mobile-buttons").style.display = "none";
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        document.getElementById("mobile-buttons").style.display = "block";
     }
 
     const toggleFullscreenButton = document.getElementById("toggle-fullscreen");

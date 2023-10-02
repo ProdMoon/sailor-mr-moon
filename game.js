@@ -7,7 +7,7 @@ import ActivateMobileButtons from "./src/utils/activateMobileButtons.js";
 import BossStage from "./src/components/bossStage.js";
 import Collision from "./src/components/collision.js";
 
-const gameCanvas = document.createElement("canvas");
+const gameCanvas = document.getElementById("game-canvas");
 const gameCtx = gameCanvas.getContext("2d");
 let zoomLevel = 1;
 
@@ -50,7 +50,7 @@ let bossStageLeftTime = EACH_LEVEL_TIME;
 let elapsedFrames = 0;
 
 function update() {
-    if (!isCollided.value) {
+    if (!isCollided.value && !isGameOver.value) {
         // Check if boss stage should be enabled
         if (bossStageLeftTime <= 0 && currentLevel < levels.length - 1) {
             slot.bullets = [];
@@ -151,7 +151,7 @@ function update() {
 
         // Increase elapsed frames
         elapsedFrames++;
-    } else {
+    } else if (!isGameOver.value) {
         // Collided situation
         if (!slot.effect) {
             slot.effect = new Collision();
@@ -166,9 +166,7 @@ function update() {
     draw();
 
     // Loop
-    if (!isGameOver.value) {
-        requestAnimationFrame(update);
-    }
+    requestAnimationFrame(update);
 }
 
 function clearCanvas() {
@@ -323,23 +321,12 @@ async function initGame() {
     // Set canvas size
     resizeCanvas();
 
-    // Append gameCanvas to body
-    document.body.appendChild(gameCanvas);
-
     // Activate mobile buttons
     ActivateMobileButtons(player, isGameOver, slot);
-
-    // Load fonts
-    const font = new FontFace("PixeloidSans", "url(/src/assets/fonts/PixeloidSans.ttf)");
-    const fontBold = new FontFace("PixeloidSansBold", "url(/src/assets/fonts/PixeloidSansBold.ttf)");
-    await font.load();
-    await fontBold.load();
-    document.fonts.add(font);
-    document.fonts.add(fontBold);
 
     levelChanged.value = true;
 
     update();
 }
 
-export default initGame();
+export default initGame;
