@@ -1,4 +1,8 @@
 export default async function leaderboardUpload(score) {
+    alert('Leaderboard will be available soon!');
+    location.reload();
+    return;
+    
     const name = prompt("Please enter your name", "");
     if (name !== null) {
         if (name === "") {
