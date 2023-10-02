@@ -6,6 +6,7 @@ import { copyObject } from "./src/utils/util.js";
 import ActivateMobileButtons from "./src/utils/activateMobileButtons.js";
 import BossStage from "./src/components/bossStage.js";
 import Collision from "./src/components/collision.js";
+import leaderboardUpload from "./src/utils/leaderboardUpload.js";
 
 const gameCanvas = document.getElementById("game-canvas");
 const gameCtx = gameCanvas.getContext("2d");
@@ -251,11 +252,11 @@ function draw() {
     }
 
     if (isGameOver.value) {
-        ctx.fillStyle = "#bbb";
+        ctx.fillStyle = "#fff";
         ctx.font = "30px PixeloidSansBold";
         ctx.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2 - 10);
         ctx.font = "20px PixeloidSans";
-        ctx.fillText("Press Enter to restart", canvas.width / 2 - 122, canvas.height / 2 + 20);
+        ctx.fillText("Click anywhere to continue", canvas.width / 2 - 145, canvas.height / 2 + 20);
     }
 
     // Draw virtual canvas to real canvas
@@ -273,16 +274,18 @@ document.addEventListener("keydown", (e) => {
             slot.itemWillBeUsed = copyObject(slot.catchedItems[0]);
             slot.catchedItems.splice(0, 1);
         }
-    } else {
-        if (e.key === "Enter") {
-            location.reload();
-        }
     }
 });
 
 document.addEventListener("keyup", (e) => {
     if (!isGameOver.value) {
         player.handleKeyup(e);
+    }
+});
+
+document.addEventListener("click", (e) => {
+    if (isGameOver.value) {
+        leaderboardUpload(elapsedTime);
     }
 });
 
