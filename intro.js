@@ -1,5 +1,6 @@
-import ActivateMobileButtons from "./src/utils/activateMobileButtons.js";
 import initGame from "./game.js";
+import Credits from "./src/components/credits.js";
+import HowToPlay from "./src/components/howToPlay.js";
 
 /* Images */
 const seaImg = new Image();
@@ -25,9 +26,13 @@ canvas.width = 800;
 canvas.height = 600;
 const ctx = canvas.getContext("2d");
 
+const credits = new Credits(canvas);
+const howToPlay = new HowToPlay(canvas);
+
 let zoomLevel = 1;
 
 let elapsedFrames = 0;
+let selectedMenu = "main";
 
 const sailorMrMoon = {
     x: 500,
@@ -42,23 +47,25 @@ const playClick = {
 };
 
 async function update() {
-    // Update sailor Mr. Moon
-    if (elapsedFrames % 7 === 0) {
-        if (sailorMrMoon.y === 84) {
-            sailorMrMoon.yGoesUp = false;
-        } else if (sailorMrMoon.y === 78) {
-            sailorMrMoon.yGoesUp = true;
+    if (selectedMenu === "main") {
+        // Update sailor Mr. Moon
+        if (elapsedFrames % 7 === 0) {
+            if (sailorMrMoon.y === 84) {
+                sailorMrMoon.yGoesUp = false;
+            } else if (sailorMrMoon.y === 78) {
+                sailorMrMoon.yGoesUp = true;
+            }
+            if (sailorMrMoon.yGoesUp) {
+                sailorMrMoon.y++;
+            } else {
+                sailorMrMoon.y--;
+            }
         }
-        if (sailorMrMoon.yGoesUp) {
-            sailorMrMoon.y++;
-        } else {
-            sailorMrMoon.y--;
-        }
-    }
 
-    // Check if play button is clicked
-    if (playClick.value) {
-        playClick.countdown--;
+        // Check if play button is clicked
+        if (playClick.value) {
+            playClick.countdown--;
+        }
     }
 
     elapsedFrames++;
@@ -81,38 +88,55 @@ function draw() {
     // Draw background
     ctx.drawImage(seaImg, 0, 0, canvas.width, canvas.height);
 
-    // Draw main title
-    ctx.drawImage(mainTitleImg, canvas.width / 2 - mainTitleImg.width / 2, 10, mainTitleImg.width, mainTitleImg.height);
+    if (selectedMenu === "main") {
+        // Draw main title
+        ctx.drawImage(mainTitleImg, canvas.width / 2 - mainTitleImg.width / 2, 10, mainTitleImg.width, mainTitleImg.height);
 
-    // Draw sailor Mr. Moon
-    ctx.drawImage(sailorMrMoonImg, sailorMrMoon.x, sailorMrMoon.y, sailorMrMoonImg.width, sailorMrMoonImg.height);
+        // Draw sailor Mr. Moon
+        ctx.drawImage(sailorMrMoonImg, sailorMrMoon.x, sailorMrMoon.y, sailorMrMoonImg.width, sailorMrMoonImg.height);
 
-    // Draw Play button
-    ctx.drawImage(woodenArrowImg, 20, 220, woodenArrowImg.width, woodenArrowImg.height);
-    ctx.fillStyle = "white";
-    ctx.font = "30px PixeloidSansBold";
-    ctx.fillText("Play", 130, 274);
+        // Draw Play button
+        ctx.drawImage(woodenArrowImg, 20, 220, woodenArrowImg.width, woodenArrowImg.height);
+        ctx.fillStyle = "white";
+        ctx.font = "30px PixeloidSansBold";
+        ctx.fillText("Play", 130, 274);
 
-    // Draw How To Play button
-    ctx.drawImage(woodenArrowImg, 70, 310, woodenArrowImg.width, woodenArrowImg.height);
-    ctx.font = "26px PixeloidSansBold";
-    ctx.fillText("How To Play", 120, 364);
+        // Draw How To Play button
+        ctx.drawImage(woodenArrowImg, 70, 310, woodenArrowImg.width, woodenArrowImg.height);
+        ctx.font = "26px PixeloidSansBold";
+        ctx.fillText("How To Play", 120, 364);
 
-    // Draw Leaderboard button
-    ctx.drawImage(woodenArrowImg, 20, 400, woodenArrowImg.width, woodenArrowImg.height);
-    ctx.fillText("Leaderboard", 65, 455);
+        // Draw Leaderboard button
+        ctx.drawImage(woodenArrowImg, 20, 400, woodenArrowImg.width, woodenArrowImg.height);
+        ctx.fillText("Leaderboard", 65, 455);
 
-    // Draw Credits button
-    ctx.drawImage(woodenArrowImg, 60, 486, woodenArrowImg.width, woodenArrowImg.height);
-    ctx.fillText("Credits", 145, 540);
+        // Draw Credits button
+        ctx.drawImage(woodenArrowImg, 60, 486, woodenArrowImg.width, woodenArrowImg.height);
+        ctx.fillText("Credits", 145, 540);
 
-    // Play fade-in effect
-    if (playClick.value) {
-        if (playClick.countdown % 20 === 0) {
-            playClick.opacity += 0.2;
+        // Play fade-in effect
+        if (playClick.value) {
+            if (playClick.countdown % 20 === 0) {
+                playClick.opacity += 0.2;
+            }
+            ctx.fillStyle = "rgba(0, 0, 0, " + playClick.opacity + ")";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        ctx.fillStyle = "rgba(0, 0, 0, " + playClick.opacity + ")";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } else if (selectedMenu === "how-to-play") {
+        howToPlay.draw(ctx);
+    } else if (selectedMenu === "leaderboard") {
+        ctx.fillStyle = "#000";
+        ctx.font = "20px PixeloidSansBold";
+        ctx.textAlign = "center";
+        ctx.fillText("Leaderboard", canvas.width / 2, 50);
+
+        ctx.font = "15px PixeloidSans";
+        ctx.fillText("Coming soon!", 400, 100);
+
+        ctx.fillText("Click anywhere to go back", canvas.width / 2, canvas.height - 100);
+        ctx.textAlign = "left";
+    } else if (selectedMenu === "credits") {
+        credits.draw(ctx);
     }
 
     // Draw virtual canvas to real canvas
@@ -158,13 +182,42 @@ gameCanvas.addEventListener("click", (e) => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    if (
-        x >= 20 * zoomLevel &&
-        x <= 20 * zoomLevel + woodenArrowImg.width * zoomLevel &&
-        y >= 220 * zoomLevel &&
-        y <= 220 * zoomLevel + woodenArrowImg.height * zoomLevel
-    ) {
-        playClick.value = true;
+    if (selectedMenu === "main") {
+        if (
+            x >= 20 * zoomLevel &&
+            x <= 20 * zoomLevel + woodenArrowImg.width * zoomLevel &&
+            y >= 220 * zoomLevel &&
+            y <= 220 * zoomLevel + woodenArrowImg.height * zoomLevel
+        ) {
+            // Clicked Play button
+            playClick.value = true;
+        } else if (
+            x >= 70 * zoomLevel &&
+            x <= 70 * zoomLevel + woodenArrowImg.width * zoomLevel &&
+            y >= 310 * zoomLevel &&
+            y <= 310 * zoomLevel + woodenArrowImg.height * zoomLevel
+        ) {
+            // Clicked How To Play button
+            selectedMenu = "how-to-play";
+        } else if (
+            x >= 20 * zoomLevel &&
+            x <= 20 * zoomLevel + woodenArrowImg.width * zoomLevel &&
+            y >= 400 * zoomLevel &&
+            y <= 400 * zoomLevel + woodenArrowImg.height * zoomLevel
+        ) {
+            // Clicked Leaderboard button
+            selectedMenu = "leaderboard";
+        } else if (
+            x >= 60 * zoomLevel &&
+            x <= 60 * zoomLevel + woodenArrowImg.width * zoomLevel &&
+            y >= 486 * zoomLevel &&
+            y <= 486 * zoomLevel + woodenArrowImg.height * zoomLevel
+        ) {
+            // Clicked Credits button
+            selectedMenu = "credits";
+        }
+    } else {
+        selectedMenu = "main";
     }
 });
 
