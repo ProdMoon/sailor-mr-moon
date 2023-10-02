@@ -49,10 +49,11 @@ export default class BossStage {
         if (this.elapsedFrames >= this.nextKeyFrame) {
             this.keyframeIdx++;
             if (this.keyframeIdx >= boss.keyframes.length - 1) {
-                this.isEnabled = false;
+                this.disable();
                 return;
             }
             this.nextKeyFrame += boss.keyframes[this.keyframeIdx].frame;
+            this.imgIdx = 0;
         }
         const thiskey = boss.keyframes[this.keyframeIdx];
         const nextkey = boss.keyframes[this.keyframeIdx + 1];
@@ -92,10 +93,26 @@ export default class BossStage {
     }
 
     enable(level) {
-        level = 0;
         this.isEnabled = true;
         this.level = level;
         this.img = bossImgLoader(level);
         this.nextKeyFrame = bossData[level].keyframes[0].frame;
+    }
+
+    disable() {
+        this.isEnabled = false;
+        this.level = 0;
+        this.x = 0;
+        this.y = 0;
+        this.img = {
+            idle: [],
+            attack: [],
+            die: [],
+        };
+        this.imgIdx = 0;
+        this.elapsedFrames = 0;
+        this.nextKeyFrame = 0;
+        this.keyframeIdx = 0;
+        this.status = "idle";
     }
 }

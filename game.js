@@ -49,7 +49,7 @@ let elapsedFrames = 0;
 
 function update() {
     // Check if boss stage should be enabled
-    if (bossStageLeftTime <= 0) {
+    if (bossStageLeftTime <= 0 && currentLevel < levels.length - 1) {
         slot.bullets = [];
         bossStage.enable(currentLevel);
         bossStageLeftTime = EACH_LEVEL_TIME;
@@ -65,8 +65,10 @@ function update() {
     if (bossStage.isEnabled) {
         bossStage.update(slot.bullets);
         if (!bossStage.isEnabled) {
-            currentLevel++;
-            levelChanged.value = true;
+            if (currentLevel < levels.length - 1) {
+                currentLevel++;
+                levelChanged.value = true;
+            }
         }
     }
 
@@ -138,6 +140,9 @@ function update() {
     // Decrease boss stage left time
     if (!bossStage.isEnabled) {
         bossStageLeftTime -= 1000 / 60;
+        if (bossStageLeftTime < 0) {
+            bossStageLeftTime = 0;
+        }
     }
 
     // Increase elapsed frames
@@ -198,8 +203,13 @@ function draw() {
     
     // Draw boss stage left time
     ctx.fillStyle = "#bbb";
-    ctx.font = "18px PixeloidSans";
-    ctx.fillText("Boss: " + (bossStageLeftTime / 1000).toFixed(), 10, 90);
+    if (currentLevel < levels.length - 1) {
+        ctx.font = "18px PixeloidSans";
+        ctx.fillText("Boss: " + (bossStageLeftTime / 1000).toFixed(), 10, 90);
+    } else {
+        ctx.font = "18px PixeloidSans";
+        ctx.fillText("Boss: -", 10, 90);
+    }
     
     // Draw Items
     ctx.fillStyle = slot.catchedItems.length > 0 ? "#fff" : "#bbb";
@@ -214,11 +224,18 @@ function draw() {
     // Draw level changed
     if (levelChanged.value) {
         ctx.fillStyle = "#bbb";
-        ctx.font = "30px PixeloidSansBold";
-        ctx.fillText("Level " + (currentLevel + 1), canvas.width / 2 - 70, canvas.height / 2);
+        if (currentLevel < levels.length - 1) {
+            ctx.font = "30px PixeloidSansBold";
+            ctx.fillText("Level " + (currentLevel + 1), canvas.width / 2 - 70, canvas.height / 2);
+        } else {
+            ctx.font = "30px PixeloidSansBold";
+            ctx.fillText("Final Level", canvas.width / 2 - 100, canvas.height / 2 - 20);
+            ctx.font = "20px PixeloidSans";
+            ctx.fillText("Survive as long as possible!", canvas.width / 2 - 150, canvas.height / 2 + 20);
+        }
         setTimeout(() => {
             levelChanged.value = false;
-        }, 1000);
+        }, 1500);
     }
 
     if (isGameOver.value) {
@@ -305,6 +322,8 @@ async function initGame() {
     await fontBold.load();
     document.fonts.add(font);
     document.fonts.add(fontBold);
+
+    levelChanged.value = true;
 
     update();
 }
