@@ -24,6 +24,7 @@ const slot = {
     items: [],
     catchedItems: [],
     itemWillBeUsed: null,
+    effect: null,
 };
 
 let currentLevel = 0;
@@ -79,15 +80,27 @@ function update() {
     }
 
     // Create items
-    if (Math.random() < 0.01) {
-        const item = new Item("bomb", canvas);
+    if (Math.random() < 0.007) {
+        const item = new Item("shield", canvas);
         slot.items.push(item);
     }
 
     // Use item
     if (slot.itemWillBeUsed) {
-        slot.itemWillBeUsed.behavior(player, slot.bullets);
-        slot.itemWillBeUsed = null;
+        slot.itemWillBeUsed.behavior(player, slot);
+        if (slot.itemWillBeUsed.duration > 0) {
+            slot.itemWillBeUsed.duration--;
+        } else {
+            slot.itemWillBeUsed = null;
+        }
+    }
+
+    // Update effect
+    if (slot.effect) {
+        slot.effect.update(player);
+        if (!slot.effect.isEnabled) {
+            slot.effect = null;
+        }
     }
 
     // Move & remove bullets
@@ -166,6 +179,11 @@ function draw() {
     // Draw boss
     if (bossStage.isEnabled) {
         bossStage.draw(ctx);
+    }
+
+    // Draw effect
+    if (slot.effect) {
+        slot.effect.draw(ctx);
     }
 
     // Draw time

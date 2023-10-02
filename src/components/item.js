@@ -1,19 +1,71 @@
 import Particle from "./particle.js";
+import Effect from "./effect.js";
 
 const itemProperties = {
-    bomb: {
+    shield: {
         color: "red",
         radius: 8,
         speed: 1,
-        behavior: bombBehavior,
+        behavior: shieldBehavior,
+        duration: 8,
     },
 }
 
-function bombBehavior(player, bullets) {
+function shieldEffect() {
+    const shieldImg = new Image();
+    shieldImg.src = "/src/assets/images/shield.png";
+    const effect = new Effect({
+        keyframes: [
+            {
+                x: 0,
+                y: 0,
+                img: shieldImg,
+                width: 200,
+                height: 200,
+                alpha: 0.5,
+                duration: 2,
+            },
+            {
+                x: 0,
+                y: 0,
+                img: shieldImg,
+                width: 200,
+                height: 200,
+                alpha: 0.35,
+                duration: 2,
+            },
+            {
+                x: 0,
+                y: 0,
+                img: shieldImg,
+                width: 200,
+                height: 200,
+                alpha: 0.5,
+                duration: 2,
+            },
+            {
+                x: 0,
+                y: 0,
+                img: shieldImg,
+                width: 200,
+                height: 200,
+                alpha: 0.35,
+                duration: 2,
+            },
+        ],
+    });
+    return effect;
+}
+
+function shieldBehavior(player, slot) {
+    const bullets = slot.bullets;
     for (let i = bullets.length - 1; i >= 0; i--) {
         if (bullets[i].isInRangeOfPlayer(player, 100)) {
             bullets.splice(i, 1);
         }
+    }
+    if (!slot.effect) {
+        slot.effect = shieldEffect();
     }
 }
 
@@ -28,6 +80,7 @@ export default class Item extends Particle {
         super(canvas, attributes);
         this.type = type;
         this.behavior = itemProperties[type].behavior;
+        this.duration = attributes.duration ?? itemProperties[type].duration;
     }
 
     draw(ctx) {
