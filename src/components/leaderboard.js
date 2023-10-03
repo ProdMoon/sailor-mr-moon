@@ -34,9 +34,9 @@ export default class Leaderboard {
             ctx.fillText("Score", 620, 100);
             ctx.font = "15px PixeloidSans";
             for (let i = 0; i < this.data.length; i++) {
-                ctx.fillText(this.skip + i + 1, 180, 150 + i * 50);
-                ctx.fillText(this.data[i].name, 400, 150 + i * 50);
-                ctx.fillText((this.data[i].score / 1000).toFixed(2), 620, 150 + i * 50);
+                ctx.fillText(this.skip + i + 1, 180, 150 + i * 30);
+                ctx.fillText(this.data[i].name, 400, 150 + i * 30);
+                ctx.fillText((this.data[i].score / 1000).toFixed(2), 620, 150 + i * 30);
             }
             ctx.font = "20px PixeloidSans";
             ctx.fillText("Prev", 80, 300);
