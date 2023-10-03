@@ -1,9 +1,12 @@
 import Particle from "./particle.js";
 import Effect from "./effect.js";
 
+const shieldItemImg = new Image();
+shieldItemImg.src = "/src/assets/images/shield-item.png";
+
 const itemProperties = {
     shield: {
-        color: "red",
+        img: shieldItemImg,
         radius: 8,
         speed: 1,
         behavior: shieldBehavior,
@@ -76,17 +79,14 @@ export default class Item extends Particle {
         }
         attributes.speed = attributes.speed ?? itemProperties[type].speed;
         attributes.radius = attributes.radius ?? itemProperties[type].radius;
-        attributes.color = attributes.color ?? itemProperties[type].color;
         super(canvas, attributes);
         this.type = type;
         this.behavior = itemProperties[type].behavior;
         this.duration = attributes.duration ?? itemProperties[type].duration;
+        this.img = itemProperties[type].img;
     }
 
     draw(ctx) {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        ctx.fill();
+        ctx.drawImage(this.img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2)
     }
 }
