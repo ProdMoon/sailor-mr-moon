@@ -1,6 +1,7 @@
 import initGame from "./game.js";
-import Credits from "./src/components/credits.js";
 import HowToPlay from "./src/components/howToPlay.js";
+import Leaderboard from "./src/components/leaderboard.js";
+import Credits from "./src/components/credits.js";
 
 /* Images */
 const seaImg = new Image();
@@ -26,13 +27,14 @@ canvas.width = 800;
 canvas.height = 600;
 const ctx = canvas.getContext("2d");
 
-const credits = new Credits(canvas);
 const howToPlay = new HowToPlay(canvas);
+const leaderboard = new Leaderboard(canvas);
+const credits = new Credits(canvas);
 
 let zoomLevel = 1;
 
 let elapsedFrames = 0;
-let selectedMenu = "main";
+const selectedMenu = { value: "main" };
 
 const sailorMrMoon = {
     x: 500,
@@ -47,7 +49,7 @@ const playClick = {
 };
 
 async function update() {
-    if (selectedMenu === "main") {
+    if (selectedMenu.value === "main") {
         // Update sailor Mr. Moon
         if (elapsedFrames % 7 === 0) {
             if (sailorMrMoon.y === 84) {
@@ -88,7 +90,7 @@ function draw() {
     // Draw background
     ctx.drawImage(seaImg, 0, 0, canvas.width, canvas.height);
 
-    if (selectedMenu === "main") {
+    if (selectedMenu.value === "main") {
         // Draw main title
         ctx.drawImage(mainTitleImg, canvas.width / 2 - mainTitleImg.width / 2, 10, mainTitleImg.width, mainTitleImg.height);
 
@@ -122,20 +124,11 @@ function draw() {
             ctx.fillStyle = "rgba(0, 0, 0, " + playClick.opacity + ")";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-    } else if (selectedMenu === "how-to-play") {
+    } else if (selectedMenu.value === "how-to-play") {
         howToPlay.draw(ctx);
-    } else if (selectedMenu === "leaderboard") {
-        ctx.fillStyle = "#000";
-        ctx.font = "20px PixeloidSansBold";
-        ctx.textAlign = "center";
-        ctx.fillText("Leaderboard", canvas.width / 2, 50);
-
-        ctx.font = "15px PixeloidSans";
-        ctx.fillText("Coming soon!", 400, 100);
-
-        ctx.fillText("Click anywhere to go back", canvas.width / 2, canvas.height - 100);
-        ctx.textAlign = "left";
-    } else if (selectedMenu === "credits") {
+    } else if (selectedMenu.value === "leaderboard") {
+        leaderboard.draw(ctx);
+    } else if (selectedMenu.value === "credits") {
         credits.draw(ctx);
     }
 
@@ -179,45 +172,50 @@ window.addEventListener("resize", debouncedResize);
 /* Event listeners */
 gameCanvas.addEventListener("click", (e) => {
     const rect = gameCanvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = (e.clientX - rect.left) / zoomLevel;
+    const y = (e.clientY - rect.top) / zoomLevel;
 
-    if (selectedMenu === "main") {
+    if (selectedMenu.value === "main") {
         if (
-            x >= 20 * zoomLevel &&
-            x <= 20 * zoomLevel + woodenArrowImg.width * zoomLevel &&
-            y >= 220 * zoomLevel &&
-            y <= 220 * zoomLevel + woodenArrowImg.height * zoomLevel
+            x >= 20 &&
+            x <= 20 + woodenArrowImg.width &&
+            y >= 220 &&
+            y <= 220 + woodenArrowImg.height
         ) {
             // Clicked Play button
             playClick.value = true;
         } else if (
-            x >= 70 * zoomLevel &&
-            x <= 70 * zoomLevel + woodenArrowImg.width * zoomLevel &&
-            y >= 310 * zoomLevel &&
-            y <= 310 * zoomLevel + woodenArrowImg.height * zoomLevel
+            x >= 70 &&
+            x <= 70 + woodenArrowImg.width &&
+            y >= 310 &&
+            y <= 310 + woodenArrowImg.height
         ) {
             // Clicked How To Play button
-            selectedMenu = "how-to-play";
+            selectedMenu.value = "how-to-play";
         } else if (
-            x >= 20 * zoomLevel &&
-            x <= 20 * zoomLevel + woodenArrowImg.width * zoomLevel &&
-            y >= 400 * zoomLevel &&
-            y <= 400 * zoomLevel + woodenArrowImg.height * zoomLevel
+            x >= 20 &&
+            x <= 20 + woodenArrowImg.width &&
+            y >= 400 &&
+            y <= 400 + woodenArrowImg.height
         ) {
+            leaderboard.getLeaderboardData();
             // Clicked Leaderboard button
-            selectedMenu = "leaderboard";
+            selectedMenu.value = "leaderboard";
         } else if (
-            x >= 60 * zoomLevel &&
-            x <= 60 * zoomLevel + woodenArrowImg.width * zoomLevel &&
-            y >= 486 * zoomLevel &&
-            y <= 486 * zoomLevel + woodenArrowImg.height * zoomLevel
+            x >= 60 &&
+            x <= 60 + woodenArrowImg.width &&
+            y >= 486 &&
+            y <= 486 + woodenArrowImg.height
         ) {
             // Clicked Credits button
-            selectedMenu = "credits";
+            selectedMenu.value = "credits";
         }
     } else {
-        selectedMenu = "main";
+        if (selectedMenu.value === "leaderboard") {
+            leaderboard.onClick(x, y, selectedMenu);
+        } else {
+            selectedMenu.value = "main";
+        }
     }
 });
 
