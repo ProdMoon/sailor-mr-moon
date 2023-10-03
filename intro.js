@@ -220,7 +220,6 @@ gameCanvas.addEventListener("click", (e) => {
 });
 
 export default (async function init() {
-    console.log(process.env);
     resizeCanvas();
 
     // Load fonts
