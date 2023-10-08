@@ -64,9 +64,10 @@ export default class Leaderboard {
                 await this.getLeaderboardData(this.skip - this.take, this.take);
             } else if (x >= 680 && x <= 800 && y >= 270 && y <= 320) {
                 await this.getLeaderboardData(this.skip + this.take, this.take);
-            } else if (x >= 0 && x <= this.canvas.width && y >= this.canvas.height - 150 && y <= this.canvas.height) {
-                selectedMenu.value = "main";
             }
+        }
+        if (x >= 0 && x <= this.canvas.width && y >= this.canvas.height - 150 && y <= this.canvas.height) {
+            selectedMenu.value = "main";
         }
     }
 }
