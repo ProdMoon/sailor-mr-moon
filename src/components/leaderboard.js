@@ -2,11 +2,13 @@ export default class Leaderboard {
     constructor(canvas) {
         this.canvas = canvas;
         this.data = null;
+        this.message = "Loading...";
         this.skip = 0;
         this.take = 10;
     }
 
     async getLeaderboardData(skip, take) {
+        this.message = "Loading...";
         this.data = null;
         if (!skip || skip < 0) {
             skip = 0;
@@ -16,9 +18,14 @@ export default class Leaderboard {
         }
         this.skip = skip;
         this.take = take;
-        const response = await fetch(`https://sailor-mr-moon-api.azurewebsites.net/Leaderboard/Get?skip=${skip}&take=${take}`);
-        const json = await response.json();
-        this.data = json.result;
+        try {
+            const response = await fetch(`https://sailor-mr-moon-api.azurewebsites.net/Leaderboard/Get?skip=${skip}&take=${take}`);
+            const json = await response.json();
+            this.data = json.result;
+        } catch (err) {
+            this.data = null;
+            this.message = "Temporary Server Error. Please try again.";
+        }
     }
 
     draw(ctx) {
@@ -43,7 +50,7 @@ export default class Leaderboard {
             ctx.fillText("Next", 720, 300);
         } else {
             ctx.font = "20px PixeloidSans";
-            ctx.fillText("Loading...", this.canvas.width / 2, 100);
+            ctx.fillText(this.message, this.canvas.width / 2, 100);
         }
 
         ctx.font = "15px PixeloidSans";
