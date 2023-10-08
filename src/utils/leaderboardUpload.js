@@ -25,12 +25,18 @@ export default async function leaderboardUpload(score) {
             },
             body: JSON.stringify(data),
         };
-        const response = await fetch("https://sailor-mr-moon-api.azurewebsites.net/Leaderboard/Add", options);
-        const json = await response.json();
-        if (json) {
-            alert("Your score has been uploaded!");
-        } else {
-            alert("Something went wrong. Please try again.");
+        try {
+            const response = await fetch("https://sailor-mr-moon-api.azurewebsites.net/Leaderboard/Add", options);
+            const json = await response.json();
+            if (json) {
+                alert("Your score has been uploaded!");
+            } else {
+                alert("Something went wrong. Please try again.");
+                leaderboardUpload(score);
+                return;
+            }
+        } catch (err) {
+            alert("Temporary Server Error. Please try again.");
             leaderboardUpload(score);
             return;
         }
